@@ -8,10 +8,10 @@ expos like Robots At The Hangar, Denver Mini Maker Faire, and so on.  The kids l
 
 # Directories
 
-ff - is the main code base that I'm writing from scratch
-encoders - scratch area for me playing with encoders
-simple-test - is a simple led blinky, mostly for me playing
-demo - some basic demonstration functionality, mostly for me playing
+ * ff - is the main code base that I'm writing from scratch
+ * encoders - scratch area for me playing with encoders
+ * simple-test - is a simple led blinky, mostly for me playing
+ * demo - some basic demonstration functionality, mostly for me playing
 
 # Details
 
@@ -21,8 +21,8 @@ The basic Pokey Design uses a Pololu Orangutan LV168 with ATmega168 onboard. I'm
 
 See LV168_Pinout.png
 
-PC0 (PCINT8) - Right Encoder
-PC1 (PCINT9) - Left Encoder
+ * PC0 (PCINT8) - Right Encoder
+ * PC1 (PCINT9) - Left Encoder
 
 ## Drivetrain
 
