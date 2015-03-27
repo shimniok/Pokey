@@ -1,0 +1,10 @@
+*.o
+*.d
+*.lst
+*.lss
+*.map
+*.eep
+*.elf
+*.hex
+.cproject
+.project
