@@ -15,7 +15,7 @@ void I2C_init(void) {
 	TWBR = TWBR_val;
 }
 
-uint8_t I2C_start(uint8_t address) {
+uint8_t I2C_start(const uint8_t address, const uint8_t read) {
 	// reset TWI control register
 	TWCR = 0;
 	// transmit START condition 
@@ -30,7 +30,7 @@ uint8_t I2C_start(uint8_t address) {
 	}
 
 	// load slave address into data register
-	TWDR = address;
+	TWDR = (address << 1) | (read ? 1 : 0);
 	// start transmission of address
 	TWCR = (1 << TWINT) | (1 << TWEN);
 	// wait for end of transmission
@@ -45,7 +45,7 @@ uint8_t I2C_start(uint8_t address) {
 	return 0;
 }
 
-uint8_t I2C_write(uint8_t data) {
+uint8_t I2C_write(const uint8_t data) {
 	// load data into data register
 	TWDR = data;
 	// start transmission of data
@@ -61,21 +61,10 @@ uint8_t I2C_write(uint8_t data) {
 	return 0;
 }
 
-uint8_t I2C_read_ack(void) {
+uint8_t I2C_read(const uint8_t ack) {
 
 	// start TWI module and acknowledge data after reception
-	TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWEA);
-	// wait for end of transmission
-	while (!(TWCR & (1 << TWINT)))
-		;
-	// return received data from TWDR
-	return TWDR;
-}
-
-uint8_t I2C_read_nack(void) {
-
-	// start receiving without acknowledging reception
-	TWCR = (1 << TWINT) | (1 << TWEN);
+	TWCR = (1 << TWINT) | (1 << TWEN) | ( ack ? (1 << TWEA) : 0 );
 	// wait for end of transmission
 	while (!(TWCR & (1 << TWINT)))
 		;
