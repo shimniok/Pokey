@@ -2,6 +2,11 @@
 #include "gbcam/camcom.h"
 #include "I2C_master.h"
 
+void encoder_init(void);
+
+unsigned int eright = 0; // encoder right counter
+unsigned int eleft = 0;  // encoder left counter
+
 int main()
 {
 	unsigned int t;
@@ -82,9 +87,34 @@ int main()
 	return 0;
 }
 
-// Local Variables: **
-// mode: C **
-// c-basic-offset: 4 **
-// tab-width: 4 **
-// indent-tabs-mode: t **
-// end: **
+/**
+ * Initialize dual encoder pins using PC0, PC1, set up interrupts
+ */
+void encoder_init() {
+	PCMSK1 |= (1<<PCINT8)|(1<<PCINT9);		// Enable PC0 (PCINT8), PC1 (PCINT9)
+	PCICR |= (1<<PCIE1);					// Enable PCINT1 interrupts
+	DDRC &= ~((1<<PC0)|(1<<PC1));			// Ensure PC0, PC1 are inputs
+	eright = eleft = 0;							// Reset counters
+	sei();
+}
+
+/**
+ * Interrupt handler for PCINT8/PCINT9
+ */
+ISR(PCINT1_vect) {
+	static uint8_t last = 0;
+	static uint8_t change = 0;
+	
+	change = PINC ^ last;
+	
+	if (change & (1<<PC0)) {
+		eright++;
+	}
+	
+	if (change & (1<<PC1)) {
+		eleft++;
+	}
+	
+	last = PINC;
+}
+
