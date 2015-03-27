@@ -2,6 +2,9 @@
 #include "gbcam/camcom.h"
 #include "I2C_master.h"
 
+void fan_init(void);
+void fan_on(void);
+void fan_off(void);
 void encoder_init(void);
 
 unsigned int eright = 0; // encoder right counter
@@ -17,10 +20,9 @@ int main()
 	lcd_goto_xy(0, 0);
 	print("Pokey");
 
-	const unsigned char servoPins[] = { IO_D0 };
+	const unsigned char servoPins[] = { IO_C2 };
 	servos_start(servoPins, sizeof(servoPins));
 
-#ifdef DISABLED
 	// Init Fan motor controller
 	for (t = 1000; t <= 2000; t += 10) {
 		set_servo_target(0, t);
@@ -33,6 +35,7 @@ int main()
 	}
 	delay_ms(2000);
 
+#ifdef DISABLE
 	// Motor test
 	lcd_goto_xy(0, 1);
 	print("motors  ");
@@ -88,9 +91,29 @@ int main()
 }
 
 /**
+ * Prepare fan control
+ */
+inline void fan_init() {
+	PORTC &= ~(1<<PC2);
+	DDRC |= (1<<PC2);
+}
+
+/**
+ * Run the fan on PC2
+ */
+inline void fan_on() {
+	PORTC |= (1<<PC2);
+}
+
+inline void fan_off() {
+	PORTC &= ~(1<<PC2);
+}
+	
+
+/**
  * Initialize dual encoder pins using PC0, PC1, set up interrupts
  */
-void encoder_init() {
+inline void encoder_init() {
 	PCMSK1 |= (1<<PCINT8)|(1<<PCINT9);		// Enable PC0 (PCINT8), PC1 (PCINT9)
 	PCICR |= (1<<PCIE1);					// Enable PCINT1 interrupts
 	DDRC &= ~((1<<PC0)|(1<<PC1));			// Ensure PC0, PC1 are inputs
