@@ -1,5 +1,5 @@
 #include <pololu/orangutan.h>
-#include "camcom.h"
+#include "gbcam/camcom.h"
 #include "I2C_master.h"
 
 int main()
@@ -43,22 +43,35 @@ int main()
 	set_motors(0, 0);
 #endif
 
-	I2C_start(TWI_CAMERA<<1);
-	I2C_write(CAM_COM_GET_OBJECTS);
-	I2C_stop();
-	delay_ms(100);
-	I2C_start((TWI_CAMERA<<1)|1);
-	uint8_t o = I2C_read_nack();
-	I2C_stop();
-
-	lcd_goto_xy(0, 1);
-	print("ready   ");
-
 	while(1) {
 		red_led(0);
 		green_led(1);
 
+//		delay_ms(100);
+
+		I2C_start(TWI_CAMERA, 0); // write register
+		I2C_write(CAM_COM_GET_OBJECTS); // command
+		I2C_stop();
 		delay_ms(100);
+		I2C_start(TWI_CAMERA, 1); // read values
+		uint8_t o = I2C_read(I2C_NACK);
+		I2C_stop();
+
+		if (o == 0) {
+			lcd_goto_xy(0, 1);
+			print_hex(0);
+		}
+
+		while(o--) {
+			I2C_start(TWI_CAMERA, 1);
+			uint8_t left   = I2C_read(I2C_ACK); // ack
+			uint8_t top    = I2C_read(I2C_ACK); // ack
+			uint8_t right  = I2C_read(I2C_ACK); // ack
+			uint8_t bottom = I2C_read(o); // nack if last object, else ack
+			lcd_goto_xy(0, 1);
+			print_hex((left + right)>>1);
+			I2C_stop();
+		}
 
 		red_led(1);
 		green_led(0);
