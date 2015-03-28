@@ -11,3 +11,10 @@
 *.aps
 *.atsln
 *.cproj
+*.b#?
+*.s#?
+*.gpi
+*.dri
+*.silk
+*.zip
+eagle.epf
