@@ -18,24 +18,21 @@ int main()
 
 	clear();
 	lcd_goto_xy(0, 0);
-	print("Pokey");
+	print("Pokey   ");
 
-	const unsigned char servoPins[] = { IO_C2 };
-	servos_start(servoPins, sizeof(servoPins));
+	fan_init();
+	delay_ms(1000);
 
-	// Init Fan motor controller
-	for (t = 1000; t <= 2000; t += 10) {
-		set_servo_target(0, t);
-		delay_ms(10);
-	}
-	delay_ms(3000);
-	for (t = 2000; t >= 1000; t -= 20) {
-		set_servo_target(0, t);
-		delay_ms(10);
-	}
-	delay_ms(2000);
+	lcd_goto_xy(0, 1);
+	print("fan on  ");
+	fan_on();
+	delay_ms(1000);
 
-#ifdef DISABLE
+	lcd_goto_xy(0, 1);
+	print("fan off ");
+	fan_off();
+	delay_ms(1000);
+
 	// Motor test
 	lcd_goto_xy(0, 1);
 	print("motors  ");
@@ -49,7 +46,9 @@ int main()
 		delay_ms(1);
 	}
 	set_motors(0, 0);
-#endif
+
+	lcd_goto_xy(0, 1);
+	print("ready   ");
 
 	while(1) {
 		red_led(0);
